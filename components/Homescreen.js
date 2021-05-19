@@ -1,6 +1,8 @@
 import React, { Component, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, TextInput, Button, TouchableOpacity, Linking } from "react-native";
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Linking, Modal } from "react-native";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { Button } from "react-native-elements";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
 export default class Homescreen extends Component {
@@ -10,7 +12,12 @@ export default class Homescreen extends Component {
     this.state = {
       email: "",
       password: "",
+      showForgtpwd: false,
     };
+    this.handleForgtpwd = this.handleForgtpwd.bind(this);
+  }
+  handleForgtpwd() {
+    this.setState({ showForgtpwd: !this.state.showForgtpwd });
   }
   render() {
     return (
@@ -40,9 +47,31 @@ export default class Homescreen extends Component {
           />
         </View>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={this.handleForgtpwd}>
           <Text style={styles.forgot_button}>Forgot Password?</Text>
         </TouchableOpacity>
+        <Modal animationType={"fade"} visible={this.state.showForgtpwd}>
+          <MaterialIcons style={styles.closeicon} name="close" size={30} onPress={this.handleForgtpwd} />
+          <View style={styles.formrow}>
+            <Text style={styles.title}>Reset your password</Text>
+            <View>
+              <Text style={{ marginBottom: 50 }}>Enter your registered e-mail</Text>
+              <TextInput style={{ borderBottomWidth: 1 }} placeholder="Enter the registered e-mail"></TextInput>
+            </View>
+            <View style={{ paddingLeft: 60 }}>
+              <Button
+                // onPress={() => this.handleRegister()}
+                title="Send"
+                buttonStyle={{
+                  backgroundColor: "#FF1493",
+                  borderRadius: 25,
+                  width: "80%",
+                  height: 50,
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
 
         <TouchableOpacity
           style={styles.loginBtn}
@@ -107,6 +136,7 @@ const styles = StyleSheet.create({
   forgot_button: {
     height: 30,
     marginBottom: 30,
+    color: "blue",
   },
 
   loginBtn: {
@@ -122,4 +152,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+  closeicon: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: "bold",
+    fontFamily: "sans-serif-condensed",
+  },
+  formrow: {
+    flex: 1,
+    justifyContent: "space-around",
+  },
+  mailid: { justifyContent: "space-between" },
 });
