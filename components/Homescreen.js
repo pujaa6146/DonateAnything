@@ -19,6 +19,7 @@ export default class Homescreen extends Component {
   handleForgtpwd() {
     this.setState({ showForgtpwd: !this.state.showForgtpwd });
   }
+
   render() {
     return (
       <View style={styles.container}>
@@ -56,11 +57,12 @@ export default class Homescreen extends Component {
             <Text style={styles.title}>Reset your password</Text>
             <View>
               <Text style={{ marginBottom: 50 }}>Enter your registered e-mail</Text>
-              <TextInput style={{ borderBottomWidth: 1 }} placeholder="Enter the registered e-mail"></TextInput>
+              <TextInput style={{ borderBottomWidth: 1 }} placeholder="Enter the registered e-mail" />
             </View>
+
             <View style={{ paddingLeft: 60 }}>
               <Button
-                // onPress={() => this.handleRegister()}
+                onPress={() => this.handleLogin()}
                 title="Send"
                 buttonStyle={{
                   backgroundColor: "#FF1493",
@@ -101,10 +103,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
 
-  // logohome: {
-  //   flex: 1,
-  // },
-
   image: {
     // marginBottom: 100,
     height: 200,
@@ -122,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: "70%",
     height: 45,
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: "center",
     alignItems: "center",
   },
