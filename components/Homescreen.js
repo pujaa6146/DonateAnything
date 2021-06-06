@@ -1,11 +1,25 @@
 import React, { Component, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Linking, Modal } from "react-native";
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Linking, Modal, ToastAndroid } from "react-native";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
+import { connect } from "react-redux";
+import { loginUser } from "../redux/Actioncreators";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
-export default class Homescreen extends Component {
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginUser: (info) => dispatch(loginUser(info)),
+  };
+};
+
+class Homescreen extends Component {
   constructor(props) {
     super(props);
 
@@ -18,6 +32,16 @@ export default class Homescreen extends Component {
   }
   handleForgtpwd() {
     this.setState({ showForgtpwd: !this.state.showForgtpwd });
+  }
+
+  async handleLogin() {
+    var logindetails = { email: this.state.email, password: this.state.password };
+    await this.props.loginUser(logindetails);
+    if (this.props.auth.isAuthenticated) {
+      this.props.navigation.navigate("Main");
+    } else {
+      ToastAndroid.showWithGravity(this.props.auth.errmsg, ToastAndroid.LONG, ToastAndroid.TOP);
+    }
   }
 
   render() {
@@ -62,7 +86,7 @@ export default class Homescreen extends Component {
 
             <View style={{ paddingLeft: 60 }}>
               <Button
-                onPress={() => this.handleLogin()}
+                // onPress={() => this.handleLogin()}
                 title="Send"
                 buttonStyle={{
                   backgroundColor: "#FF1493",
@@ -75,11 +99,7 @@ export default class Homescreen extends Component {
           </View>
         </Modal>
 
-        <TouchableOpacity
-          style={styles.loginBtn}
-          activeOpacity={0.8}
-          onPress={() => this.props.navigation.navigate("Main")}
-        >
+        <TouchableOpacity style={styles.loginBtn} activeOpacity={0.8} onPress={() => this.handleLogin()}>
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
         <View style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
@@ -166,3 +186,5 @@ const styles = StyleSheet.create({
   },
   mailid: { justifyContent: "space-between" },
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(Homescreen);

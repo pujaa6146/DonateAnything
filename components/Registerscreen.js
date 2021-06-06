@@ -1,12 +1,26 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ToastAndroid } from "react-native";
 import { Button, Icon, Input, CheckBox } from "react-native-elements";
 import ValidationComponent from "react-native-form-validator";
+import { connect } from "react-redux";
+import { registerUser } from "../redux/Actioncreators";
 import { FontAwesome } from "@expo/vector-icons";
 import PasswordInputText from "react-native-hide-show-password-input";
 import { Alert } from "react-native";
 
-export default class Register extends ValidationComponent {
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    registerUser: (info) => dispatch(registerUser(info)),
+  };
+};
+
+class Register extends ValidationComponent {
   constructor(props) {
     super(props);
 
@@ -19,12 +33,12 @@ export default class Register extends ValidationComponent {
       errmsg: "",
     };
   }
-  handleRegister() {
+  async handleRegister() {
     // Call ValidationComponent validate method
     this.validate({
       name: { minlength: 3, maxlength: 20, required: true },
       password: {
-        minlength: 4,
+        minlength: 8,
         maxlength: 12,
         required: true,
         hasUpperCase: true,
@@ -36,11 +50,25 @@ export default class Register extends ValidationComponent {
       ngo_or_donater: { required: true },
     });
 
-    console.log(this.isFormValid());
     if (this.isFormValid() == false) {
       this.setState({ errmsg: this.getErrorMessages() });
     } else {
       this.setState({ errmsg: "" });
+    }
+
+    var signupdetails = {
+      name: this.state.name,
+      password: this.state.password,
+      email: this.state.email,
+      ngo_or_donater: this.state.ngo_or_donater,
+    };
+
+    await this.props.registerUser(signupdetails);
+
+    if (this.props.auth.isAuthenticated) {
+      this.props.navigation.navigate("Main");
+    } else {
+      ToastAndroid.showWithGravity(this.props.auth.errmsg, ToastAndroid.LONG, ToastAndroid.TOP);
     }
   }
 
@@ -63,8 +91,8 @@ export default class Register extends ValidationComponent {
           containerStyle={styles.formInput}
         />
         {this.isFieldInError("name") &&
-          this.getErrorsInField("name").map((errorMessage) => (
-            <Text key={errorMessage.id} style={styles.error}>
+          this.getErrorsInField("name").map((errorMessage, idx) => (
+            <Text key={idx} style={styles.error}>
               {errorMessage}
             </Text>
           ))}
@@ -76,7 +104,7 @@ export default class Register extends ValidationComponent {
             this.setState({ password }, () => {
               this.validate({
                 password: {
-                  minlength: 3,
+                  minlength: 8,
                   maxlength: 12,
                   required: true,
                   hasUpperCase: true,
@@ -91,8 +119,8 @@ export default class Register extends ValidationComponent {
           secureTextEntry={true}
         />
         {this.isFieldInError("password") &&
-          this.getErrorsInField("password").map((errorMessage) => (
-            <Text key={errorMessage.id} style={styles.error}>
+          this.getErrorsInField("password").map((errorMessage, idx) => (
+            <Text key={idx} style={styles.error}>
               {errorMessage}
             </Text>
           ))}
@@ -113,8 +141,8 @@ export default class Register extends ValidationComponent {
           type={this.state.hidden ? "password" : "text"}
         />
         {this.isFieldInError("confirmpassword") &&
-          this.getErrorsInField("confirmpassword").map((errorMessage) => (
-            <Text key={errorMessage.id} style={styles.error}>
+          this.getErrorsInField("confirmpassword").map((errorMessage, idx) => (
+            <Text key={idx} style={styles.error}>
               {errorMessage}
             </Text>
           ))}
@@ -133,8 +161,8 @@ export default class Register extends ValidationComponent {
           containerStyle={styles.formInput}
         />
         {this.isFieldInError("email") &&
-          this.getErrorsInField("email").map((errorMessage) => (
-            <Text key={errorMessage.id} style={styles.error}>
+          this.getErrorsInField("email").map((errorMessage, idx) => (
+            <Text key={idx} style={styles.error}>
               {errorMessage}
             </Text>
           ))}
@@ -143,8 +171,8 @@ export default class Register extends ValidationComponent {
             title="Donater"
             checkedIcon="dot-circle-o"
             uncheckedIcon="circle-o"
-            checked={this.state.ngo_or_donater === "Donater"}
-            onPress={() => this.setState({ ngo_or_donater: "Donater" })}
+            checked={this.state.ngo_or_donater === "donater"}
+            onPress={() => this.setState({ ngo_or_donater: "donater" })}
             containerStyle={styles.formCheckbox}
             checkedColor="#FF69B4"
             uncheckedColor="grey"
@@ -153,15 +181,14 @@ export default class Register extends ValidationComponent {
             title="NGO"
             checkedIcon="dot-circle-o"
             uncheckedIcon="circle-o"
-            checked={this.state.ngo_or_donater === "NGO"}
-            onPress={() => this.setState({ ngo_or_donater: "NGO" })}
+            checked={this.state.ngo_or_donater === "ngo"}
+            onPress={() => this.setState({ ngo_or_donater: "ngo" })}
             containerStyle={styles.formCheckbox}
             checkedColor="#FF69B4"
             uncheckedColor="grey"
           ></CheckBox>
         </View>
         <Text style={styles.error}>{this.state.errmsg}</Text>
-
         <View style={styles.formButton}>
           <Button
             onPress={() => this.handleRegister()}
@@ -205,3 +232,5 @@ const styles = StyleSheet.create({
     paddingLeft: 60,
   },
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

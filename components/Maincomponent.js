@@ -20,7 +20,14 @@ import { Icon } from "react-native-elements";
 import CheckBox from "@react-native-community/checkbox";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import * as Location from "expo-location";
+import { connect } from "react-redux";
 import { createStackNavigator, createAppContainer } from "react-navigation";
+
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth,
+  };
+};
 
 class Main extends Component {
   constructor(props) {
@@ -70,21 +77,35 @@ class Main extends Component {
     const showAlert = () => {
       Alert.alert("An agent will collect your items shortly!");
     };
-    // const button2ClickedHandler = () => {
-    //   console.log("button2 clicked");
-    // };
+
     return (
       <ImageBackground resizeMode="cover" style={styles.container} source={require("./img/donatebg.jpg")}>
         <StatusBar style="auto" />
+        <View style={styles.logout}>
+          <Button title="Logout" color="#FFB6C1" />
+        </View>
+
         <View style={styles.logocontainer}>
           <Image style={styles.logo} source={require("./img/logoremovebg.png")} />
           <Text style={styles.title}>DonateAnything</Text>
+        </View>
+        <View style={{ flexDirection: "row", marginBottom: 30 }}>
+          <Text style={{ textTransform: "capitalize", fontSize: 25, fontWeight: "bold" }}>
+            {this.props.auth.isAuthenticated ? this.props.auth.user.name : ""}
+          </Text>
+          <Text style={{ fontSize: 25, fontWeight: "bold" }}>&#44;</Text>
+          <Text style={{ textTransform: "uppercase", fontSize: 25, fontWeight: "bold" }}>
+            {this.props.auth.isAuthenticated ? this.props.auth.user.ngo_or_donater : ""}
+          </Text>
         </View>
         <View style={styles.bodyup}>
           <Text style={styles.think}>Thinking to donate?</Text>
 
           <View style={styles.donatebutton}>
             <TouchableOpacity
+              disabled={
+                this.props.auth.isAuthenticated && this.props.auth.user.ngo_or_donater == "donater" ? false : true
+              }
               onPress={() => {
                 this.getLocation();
                 this.handleModal();
@@ -93,10 +114,10 @@ class Main extends Component {
             >
               <Text>Donate</Text>
             </TouchableOpacity>
-            <Text>Donate for needy</Text>
           </View>
           <View style={styles.ngobutton}>
             <TouchableOpacity
+              disabled={this.props.auth.isAuthenticated && this.props.auth.user.ngo_or_donater == "ngo" ? false : true}
               onPress={() => {
                 this.getLocation();
                 this.handleAgent();
@@ -105,7 +126,6 @@ class Main extends Component {
             >
               <Text>NGO Agent</Text>
             </TouchableOpacity>
-            <Text>Requirements</Text>
           </View>
           <Modal animationType={"fade"} visible={this.state.showModal}>
             <View style={styles.formrow}>
@@ -281,7 +301,7 @@ const styles = StyleSheet.create({
     paddingRight: 180,
   },
   ngobutton: {
-    top: -80,
+    top: -60,
     paddingLeft: 200,
   },
   button1: {
@@ -316,5 +336,10 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-evenly",
   },
+  logout: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+  },
 });
-export default Main;
+export default connect(mapStateToProps, null)(Main);

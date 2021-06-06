@@ -4,14 +4,21 @@ import Main from "./components/Maincomponent";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import Register from "./components/Registerscreen";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { ConfigureStore } from "./redux/Configurestore";
 
-// export default function App() {
-//   return <Main />;
-// }
+const { persistor, store } = ConfigureStore();
 
 export default class App extends React.Component {
   render() {
-    return <AppContainer />;
+    return (
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <AppContainer />
+        </PersistGate>
+      </Provider>
+    );
   }
 }
 
