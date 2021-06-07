@@ -117,3 +117,52 @@ export const loginUser = (info) => (dispatch) => {
     })
     .catch((error) => dispatch(loginError(error.message)));
 };
+export const requestLogout = () => {
+  return {
+    type: ActionTypes.LOGOUT_REQUEST,
+  };
+};
+
+export const receiveLogout = () => {
+  return {
+    type: ActionTypes.LOGOUT_SUCCESS,
+  };
+};
+export const logoutError = (message) => {
+  return {
+    type: ActionTypes.LOGOUT_FAILURE,
+    message,
+  };
+};
+
+async function deleteValFromStore(key, value) {
+  await SecureStore.deleteItemAsync(key, value);
+}
+// Logs the user out
+export const logoutUser = (refreshToken) => (dispatch) => {
+  console.log("*****************************");
+  console.log(refreshToken);
+  dispatch(requestLogout());
+  return fetch(baseUrl + "auth/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ refreshToken }),
+  })
+    .then(
+      (response) => {
+        if (response.status == 204) {
+          deleteValFromStore("token");
+          deleteValFromStore("user");
+          dispatch(receiveLogout());
+        } else {
+          dispatch(logoutError(response.message));
+        }
+      },
+      (error) => {
+        throw error;
+      }
+    )
+    .catch((error) => dispatch(logoutError(error.message)));
+};

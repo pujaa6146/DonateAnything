@@ -32,6 +32,12 @@ export const auth = (
       return { ...state, isLoading: false, isAuthenticated: true, errmsg: "", token: action.token, user: action.user };
     case ActionTypes.LOGIN_FAILURE:
       return { ...state, isLoading: false, isAuthenticated: false, errmsg: action.message };
+    case ActionTypes.LOGOUT_REQUEST:
+      return { ...state, isLoading: true, isAuthenticated: true };
+    case ActionTypes.LOGOUT_SUCCESS:
+      return { ...state, isLoading: false, isAuthenticated: false, token: "", user: null };
+    case ActionTypes.LOGOUT_FAILURE:
+      return { ...state, isLoading: false, isAuthenticated: true, errmsg: action.message };
     default:
       return state;
   }

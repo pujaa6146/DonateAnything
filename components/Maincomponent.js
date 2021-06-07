@@ -21,11 +21,18 @@ import CheckBox from "@react-native-community/checkbox";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { connect } from "react-redux";
+import { logoutUser } from "../redux/Actioncreators";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
 const mapStateToProps = (state) => {
   return {
     auth: state.auth,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logoutUser: (refreshToken) => dispatch(logoutUser(refreshToken)),
   };
 };
 
@@ -52,6 +59,15 @@ class Main extends Component {
 
   handleAgent() {
     this.setState({ showAgent: !this.state.showAgent });
+  }
+
+  async handleLogout() {
+    console.log("#########################################");
+    console.log(this.props.auth.token.refresh.token);
+    await this.props.logoutUser(this.props.auth.token.refresh.token);
+    if (this.props.auth.isAuthenticated == false) {
+      this.props.navigation.navigate("Home");
+    }
   }
 
   getLocation() {
@@ -82,7 +98,7 @@ class Main extends Component {
       <ImageBackground resizeMode="cover" style={styles.container} source={require("./img/donatebg.jpg")}>
         <StatusBar style="auto" />
         <View style={styles.logout}>
-          <Button title="Logout" color="#FFB6C1" />
+          <Button onPress={() => this.handleLogout()} title="Logout" color="#FFB6C1" />
         </View>
 
         <View style={styles.logocontainer}>
@@ -342,4 +358,4 @@ const styles = StyleSheet.create({
     right: 20,
   },
 });
-export default connect(mapStateToProps, null)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
