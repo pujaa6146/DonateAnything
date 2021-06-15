@@ -12,17 +12,19 @@ import {
   Modal,
   TextInput,
   Alert,
+  ScrollView,
   Picker,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Moment from "moment";
-import { Icon } from "react-native-elements";
+import { Icon, Card } from "react-native-elements";
 import CheckBox from "@react-native-community/checkbox";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { connect } from "react-redux";
 import { logoutUser } from "../redux/Actioncreators";
-import { createStackNavigator, createAppContainer } from "react-navigation";
+import * as MailComposer from "expo-mail-composer";
+import ValidationComponent from "react-native-form-validator";
 
 const mapStateToProps = (state) => {
   return {
@@ -36,7 +38,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-class Main extends Component {
+class Main extends ValidationComponent {
   constructor(props) {
     super(props);
 
@@ -45,9 +47,10 @@ class Main extends Component {
       date: new Date(),
       show: false,
       mode: "date",
-      location: "fetching address...",
-      ngolocation: "fetching address...",
+      location: "",
+      ngolocation: "",
       showAgent: false,
+      errmsg: "",
     };
     this.handleModal = this.handleModal.bind(this);
     this.handleAgent = this.handleAgent.bind(this);
@@ -62,8 +65,6 @@ class Main extends Component {
   }
 
   async handleLogout() {
-    console.log("#########################################");
-    console.log(this.props.auth.token.refresh.token);
     await this.props.logoutUser(this.props.auth.token.refresh.token);
     if (this.props.auth.isAuthenticated == false) {
       this.props.navigation.navigate("Home");
@@ -77,8 +78,10 @@ class Main extends Component {
           latitude: position.coords.latitude.valueOf(),
           longitude: position.coords.longitude.valueOf(),
         };
+        console.log(coords);
         let response = await Location.reverseGeocodeAsync(coords);
         let address = "fetching address...";
+        console.log(response);
         for (let item of response) {
           address = `${item.name}, ${item.street}, ${item.district}, ${item.city}, ${item.region}, ${item.country} - ${item.postalCode}`;
         }
@@ -88,11 +91,68 @@ class Main extends Component {
       { enableHighAccuracy: true, timeout: 80000, maximumAge: 10000 }
     );
   }
+  sendMail() {
+    MailComposer.composeAsync({
+      recipients: ["cspujaa@gmail.com"],
+      subject: "Enquiry",
+      body: "To whom it may concern:",
+    });
+  }
+
+  async handleDonateDetails() {
+    this.validate({
+      location: { required: true },
+      DT_Picker: { required: true },
+    });
+    var checkedItems = this.state.checked1 || this.state.checked2 ? true : false;
+
+    if (this.isFormValid() && checkedItems == true) {
+      this.setState({ errmsg: "" });
+      Alert.alert("An NGO agent will collect your items shortly!");
+    } else {
+      var newerrmsg = this.getErrorMessages();
+      if (checkedItems == false) {
+        newerrmsg = newerrmsg + "\nPlease select donate item type.";
+      }
+      this.setState({ errmsg: newerrmsg });
+    }
+  }
+
+  async handleNGODetails() {
+    this.validate({
+      location: { required: true },
+    });
+    var checkedItems = this.state.checked1 || this.state.checked2 ? true : false;
+
+    if (this.isFormValid() && checkedItems == true) {
+      this.setState({ errmsg: "" });
+      Alert.alert(
+        "Hey There!",
+        "Two button alert dialog",
+        [
+          {
+            text: "SEND MAIL",
+            onPress: this.sendMail,
+          },
+          { text: "DONT SEND", onPress: () => console.log("No button clicked"), style: "cancel" },
+        ],
+        {
+          cancelable: true,
+        }
+      );
+    } else {
+      var newerrmsg = this.getErrorMessages();
+      if (checkedItems == false) {
+        newerrmsg = newerrmsg + "\nPlease select NGO item type.";
+      }
+      this.setState({ errmsg: newerrmsg });
+    }
+  }
 
   render() {
-    const showAlert = () => {
-      Alert.alert("An agent will collect your items shortly!");
-    };
+    // const showNgoAlert = () => {
+
+    // };
 
     return (
       <ImageBackground resizeMode="cover" style={styles.container} source={require("./img/donatebg.jpg")}>
@@ -157,6 +217,7 @@ class Main extends Component {
                 style={{ borderBottomWidth: 1 }}
                 textContentType="location"
                 placeholder="Get the pickup location"
+                ref="location"
               >
                 {this.state.location}
               </TextInput>
@@ -199,6 +260,7 @@ class Main extends Component {
                   borderWidth: 2,
                   flexDirection: "row",
                 }}
+                ref="DT_Picker"
                 onPress={() => this.setState({ show: true, mode: "date" })}
               >
                 <Icon type="font-awesome" name="calendar" color="pink" />
@@ -224,9 +286,15 @@ class Main extends Component {
                 />
               )}
             </View>
-
+            <Text style={styles.error}>{this.state.errmsg}</Text>
             <View style={{ flex: 1, flexDirection: "column", justifyContent: "flex-end" }}>
-              <Button onPress={showAlert} title="Submit" color="pink" />
+              <Button
+                onPress={() => {
+                  this.handleDonateDetails();
+                }}
+                title="Submit"
+                color="pink"
+              />
             </View>
           </Modal>
           <Modal animationType={"fade"} visible={this.state.showAgent}>
@@ -266,9 +334,12 @@ class Main extends Component {
                 <Text>Dress</Text>
               </View>
             </View>
+            <Text style={styles.error}>{this.state.errmsg}</Text>
             <View style={styles.agent}>
               <Button
-                // onPress={() => this.handleReservation()}
+                onPress={() => {
+                  this.handleNGODetails();
+                }}
                 title="Submit"
                 color="pink"
               />
@@ -356,6 +427,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 50,
     right: 20,
+  },
+  error: {
+    paddingLeft: 15,
+    color: "red",
   },
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

@@ -86,8 +86,7 @@ class Homescreen extends Component {
 
             <View style={{ paddingLeft: 60 }}>
               <Button
-                // onPress={() => this.handleLogin()}
-                title="Send"
+                title="Send Email"
                 buttonStyle={{
                   backgroundColor: "#FF1493",
                   borderRadius: 25,

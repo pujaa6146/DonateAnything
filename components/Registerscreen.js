@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-evenly",
+    backgroundColor: "#fadadd",
   },
   title: {
     fontWeight: "bold",
@@ -226,6 +227,7 @@ const styles = StyleSheet.create({
   },
   formCheckbox: {
     backgroundColor: null,
+    borderColor: "#fadadd",
   },
 
   formButton: {
