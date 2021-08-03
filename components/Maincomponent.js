@@ -104,7 +104,8 @@ class Main extends ValidationComponent {
       location: { required: true },
       DT_Picker: { required: true },
     });
-    var checkedItems = this.state.checked1 || this.state.checked2 ? true : false;
+    var checkedItems =
+      this.state.checked1 || this.state.checked2 ? true : false;
 
     if (this.isFormValid() && checkedItems == true) {
       this.setState({ errmsg: "" });
@@ -122,19 +123,24 @@ class Main extends ValidationComponent {
     this.validate({
       location: { required: true },
     });
-    var checkedItems = this.state.checked1 || this.state.checked2 ? true : false;
+    var checkedItems =
+      this.state.checked1 || this.state.checked2 ? true : false;
 
     if (this.isFormValid() && checkedItems == true) {
       this.setState({ errmsg: "" });
       Alert.alert(
         "Hey There!",
-        "Two button alert dialog",
+        "The Donater details will appear here",
         [
           {
             text: "SEND MAIL",
             onPress: this.sendMail,
           },
-          { text: "DONT SEND", onPress: () => console.log("No button clicked"), style: "cancel" },
+          {
+            text: "DONT SEND",
+            onPress: () => console.log("No button clicked"),
+            style: "cancel",
+          },
         ],
         {
           cancelable: true,
@@ -155,32 +161,68 @@ class Main extends ValidationComponent {
     // };
 
     return (
-      <ImageBackground resizeMode="cover" style={styles.container} source={require("./img/donatebg.jpg")}>
+      <ImageBackground
+        resizeMode="cover"
+        style={styles.container}
+        source={require("./img/donatebg.jpg")}
+      >
         <StatusBar style="auto" />
         <View style={styles.logout}>
-          <Button onPress={() => this.handleLogout()} title="Logout" color="#FFB6C1" />
+          <Button
+            onPress={() => this.handleLogout()}
+            title="Logout"
+            color="#FFB6C1"
+          />
         </View>
 
         <View style={styles.logocontainer}>
-          <Image style={styles.logo} source={require("./img/logoremovebg.png")} />
+          <Image
+            style={styles.logo}
+            source={require("./img/logoremovebg.png")}
+          />
           <Text style={styles.title}>DonateAnything</Text>
         </View>
-        <View style={{ flexDirection: "row", marginBottom: 30 }}>
-          <Text style={{ textTransform: "capitalize", fontSize: 25, fontWeight: "bold" }}>
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            top: 20,
+          }}
+        >
+          <Text
+            style={{
+              textTransform: "capitalize",
+              fontSize: 25,
+              fontWeight: "bold",
+            }}
+          >
             {this.props.auth.isAuthenticated ? this.props.auth.user.name : ""}
           </Text>
           <Text style={{ fontSize: 25, fontWeight: "bold" }}>&#44;</Text>
-          <Text style={{ textTransform: "uppercase", fontSize: 25, fontWeight: "bold" }}>
-            {this.props.auth.isAuthenticated ? this.props.auth.user.ngo_or_donater : ""}
+          <Text
+            style={{
+              textTransform: "uppercase",
+              fontSize: 25,
+              fontWeight: "bold",
+            }}
+          >
+            {this.props.auth.isAuthenticated
+              ? this.props.auth.user.ngo_or_donater
+              : ""}
           </Text>
         </View>
         <View style={styles.bodyup}>
-          <Text style={styles.think}>Thinking to donate?</Text>
+          <Text style={styles.think}>Love all.Serve all.</Text>
+          <Text style={styles.think}>Help ever.Hurt never.</Text>
 
           <View style={styles.donatebutton}>
             <TouchableOpacity
               disabled={
-                this.props.auth.isAuthenticated && this.props.auth.user.ngo_or_donater == "donater" ? false : true
+                this.props.auth.isAuthenticated &&
+                this.props.auth.user.ngo_or_donater == "donater"
+                  ? false
+                  : true
               }
               onPress={() => {
                 this.getLocation();
@@ -193,7 +235,12 @@ class Main extends ValidationComponent {
           </View>
           <View style={styles.ngobutton}>
             <TouchableOpacity
-              disabled={this.props.auth.isAuthenticated && this.props.auth.user.ngo_or_donater == "ngo" ? false : true}
+              disabled={
+                this.props.auth.isAuthenticated &&
+                this.props.auth.user.ngo_or_donater == "ngo"
+                  ? false
+                  : true
+              }
               onPress={() => {
                 this.getLocation();
                 this.handleAgent();
@@ -206,7 +253,12 @@ class Main extends ValidationComponent {
           <Modal animationType={"fade"} visible={this.state.showModal}>
             <View style={styles.formrow}>
               <Text style={styles.title}>Donate Details</Text>
-              <MaterialIcons style={styles.closeicon} name="close" size={30} onPress={this.handleModal} />
+              <MaterialIcons
+                style={styles.closeicon}
+                name="close"
+                size={30}
+                onPress={this.handleModal}
+              />
             </View>
             <View style={styles.formrow}>
               <View style={{ flexDirection: "row" }}>
@@ -232,7 +284,9 @@ class Main extends ValidationComponent {
               <View style={{ flexDirection: "row" }}>
                 <CheckBox
                   value={this.state.checked1}
-                  onValueChange={() => this.setState({ checked1: !this.state.checked1 })}
+                  onValueChange={() =>
+                    this.setState({ checked1: !this.state.checked1 })
+                  }
                   tintColors={{ true: "pink", false: "DarkPink" }}
                 />
                 <Text>Food</Text>
@@ -240,7 +294,9 @@ class Main extends ValidationComponent {
               <View style={{ flexDirection: "row" }}>
                 <CheckBox
                   value={this.state.checked2}
-                  onValueChange={() => this.setState({ checked2: !this.state.checked2 })}
+                  onValueChange={() =>
+                    this.setState({ checked2: !this.state.checked2 })
+                  }
                   tintColors={{ true: "pink", false: "DarkPink" }}
                 />
                 <Text>Dress</Text>
@@ -264,7 +320,9 @@ class Main extends ValidationComponent {
                 onPress={() => this.setState({ show: true, mode: "date" })}
               >
                 <Icon type="font-awesome" name="calendar" color="pink" />
-                <Text>{" " + Moment(this.state.date).format("DD-MMM-YYYY h:mm A")}</Text>
+                <Text>
+                  {" " + Moment(this.state.date).format("DD-MMM-YYYY h:mm A")}
+                </Text>
               </TouchableOpacity>
               {this.state.show && (
                 <DateTimePicker
@@ -287,7 +345,13 @@ class Main extends ValidationComponent {
               )}
             </View>
             <Text style={styles.error}>{this.state.errmsg}</Text>
-            <View style={{ flex: 1, flexDirection: "column", justifyContent: "flex-end" }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "column",
+                justifyContent: "flex-end",
+              }}
+            >
               <Button
                 onPress={() => {
                   this.handleDonateDetails();
@@ -300,14 +364,23 @@ class Main extends ValidationComponent {
           <Modal animationType={"fade"} visible={this.state.showAgent}>
             <View style={styles.agent}>
               <Text style={styles.title}>NGO Details</Text>
-              <MaterialIcons style={styles.closeicon} name="close" size={30} onPress={this.handleAgent} />
+              <MaterialIcons
+                style={styles.closeicon}
+                name="close"
+                size={30}
+                onPress={this.handleAgent}
+              />
             </View>
             <View style={styles.agent}>
               <View style={{ flexDirection: "row" }}>
                 <MaterialIcons name="location-on" size={24} color="black" />
                 <Text style={{ paddingLeft: 10 }}>Your Location</Text>
               </View>
-              <TextInput style={{ borderBottomWidth: 1 }} textContentType="location" placeholder="Enter the location">
+              <TextInput
+                style={{ borderBottomWidth: 1 }}
+                textContentType="location"
+                placeholder="Enter the location"
+              >
                 {this.state.ngolocation}
               </TextInput>
             </View>
@@ -320,7 +393,9 @@ class Main extends ValidationComponent {
               <View style={{ flexDirection: "row", paddingLeft: 10 }}>
                 <CheckBox
                   value={this.state.checked1}
-                  onValueChange={() => this.setState({ checked1: !this.state.checked1 })}
+                  onValueChange={() =>
+                    this.setState({ checked1: !this.state.checked1 })
+                  }
                   tintColors={{ true: "pink", false: "DarkPink" }}
                 />
                 <Text>Food</Text>
@@ -328,7 +403,9 @@ class Main extends ValidationComponent {
               <View style={{ flexDirection: "row", paddingLeft: 10 }}>
                 <CheckBox
                   value={this.state.checked2}
-                  onValueChange={() => this.setState({ checked2: !this.state.checked2 })}
+                  onValueChange={() =>
+                    this.setState({ checked2: !this.state.checked2 })
+                  }
                   tintColors={{ true: "pink", false: "DarkPink" }}
                 />
                 <Text>Dress</Text>
@@ -375,10 +452,11 @@ const styles = StyleSheet.create({
     width: 300,
     height: 350,
     alignItems: "center",
+    top: 30,
   },
   think: {
     fontSize: 25,
-    margin: 20,
+    marginTop: 5,
     fontFamily: "notoserif",
     fontStyle: "italic",
   },

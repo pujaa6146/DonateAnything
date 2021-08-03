@@ -28,6 +28,28 @@ async function setValToStore(key, value) {
   await SecureStore.setItemAsync(key, value);
 }
 
+async function sendVerifyEmail(user, token) {
+  await fetch(baseUrl + "auth/send-verification-email", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + token,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  })
+    .then(
+      (response) => {
+        if (response.status != 201) {
+          throw new Error("Failed to send verification email");
+        }
+      },
+      (error) => {
+        throw error;
+      }
+    )
+    .catch((error) => console.log(error.message));
+}
+
 export const registerUser = (info) => (dispatch) => {
   dispatch(requestRegister(info));
 
@@ -49,6 +71,7 @@ export const registerUser = (info) => (dispatch) => {
     .then((response) => response.json())
     .then((response) => {
       if (response.user && response.tokens) {
+        sendVerifyEmail(response.user, response.tokens.access.token);
         // If login was successful, set the token in local storage
         setValToStore("token", JSON.stringify(response.tokens));
         setValToStore("user", JSON.stringify(response.user));
